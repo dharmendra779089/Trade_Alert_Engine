@@ -1,0 +1,52 @@
+[ START ]
+   │
+   ├─► [ Import Modules ] (requests, twilio.rest)
+   │
+   ├─► [ Initialize Variables ] (API Keys, Endpoints, Phone Numbers, Stock: TSLA)
+   │
+   ▼
+[ FETCH STOCK DATA ]
+   │
+   └─► Send GET Request to Alpha Vantage API
+   │
+   ▼
+[ PROCESS STOCK DATA ]
+   │
+   ├─► Extract yesterday's closing price
+   ├─► Extract the day before yesterday's closing price
+   ├─► Calculate raw difference (Yesterday - Day Before)
+   ├─► Determine trend (Assign 🔺 if positive, 🔻 if negative)
+   └─► Calculate percentage difference (diff_percent)
+   │
+   ▼
+[ DECISION: Is absolute(diff_percent) > 1% ? ]
+   │
+   ├─► [ NO ] ──────────────────────────────────────────┐
+   │                                                    │
+   └─► [ YES ]                                          │
+        │                                               │
+        ▼                                               │
+     [ FETCH NEWS DATA ]                                │
+        │                                               │
+        └─► Send GET Request to News API                │
+        │   (Searching titles for "Tesla Inc")          │
+        │                                               │
+        ▼                                               │
+     [ PROCESS NEWS DATA ]                              │
+        │                                               │
+        ├─► Extract list of articles from JSON          │
+        ├─► Slice list to keep only the first 3         │
+        └─► Format text for SMS:                        │
+            "TSLA: 🔺/🔻 X% \n Headline: ... \n Brief: ..."
+        │                                               │
+        ▼                                               │
+     [ LOOP: For each of the 3 articles ]               │
+        │                                               │
+        ├─► Connect to Twilio Client                    │
+        └─► Send SMS to Verified Number                 │
+        │                                               │
+        ▼                                               │
+     [ END OF LOOP ]                                    │
+        │                                               │
+        ▼                                               ▼
+     [ END ] ◄──────────────────────────────────────────┘
